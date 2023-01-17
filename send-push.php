@@ -1,14 +1,12 @@
 <?php
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    require_once $_SERVER['DOCUMENT_ROOT'] .'/accessdata/connection.php'; 
+    //require database
     $receiverUserid=stripslashes(htmlspecialchars(trim($_POST['receiverUserid'])));
     $yourtext=stripslashes(htmlspecialchars(trim($_POST['yourtext'])));
     
-    $pp=new Connection();
-    $data["myUserID"]=$pp->ppuserid;
-    $data["myFirstname"]=$pp->ppfirstname;
+    
     $data["myMessage"]=$yourtext;
-    $receiverToken=$pp->get_token($receiverUserid);
+    $receiverToken=$pp->get_token($receiverUserid);//use userid to get his/her registered device token from database
     
     function push_notification_php($receiverToken, $data) {
     
@@ -21,9 +19,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $fields = array(
             'registration_ids' => array($receiverToken),
             'data' => array (
-                "message" => $data["myMessage"],
-                "senderFirstname"=>$data["myFirstname"],
-                "senderUserid"=>$data["myUserID"]
+                "message" => $data["myMessage"]
             )
         );
         $fields = json_encode($fields);
@@ -46,8 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
     
     
-    // $id="eNck2Ezam1c:APA91bH0oo4Jy9ZIb_F2E-D4X3c2h-E8IM0QQ1qwx9x0oQ6GT5e1Zz1bwbbZXqvzdnpYkDCGT3G_QfYnnq_IZfZWOYpwCgyvOnjcANx1DTcFTt6J4p6rR0EbkPbwkye2fy-8s80x0YM3";
-    // $message="heyyy boy!";
+
     
     $res=push_notification_php($receiverToken,$data);
     echo $res;
